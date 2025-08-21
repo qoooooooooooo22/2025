@@ -1,2 +1,2 @@
 import streamlit as st
-st.title('쿠우쿠우쿠쿠쿸')
+st.title('베이스고수다.')
