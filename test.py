@@ -1,38 +1,66 @@
 import streamlit as st
-import openai
 
-# 🔑 OpenAI API 키 설정 (보안 위해 환경변수로 관리 추천)
-openai.api_key = "YOUR_OPENAI_API_KEY"
+# openai 설치 여부 확인
+try:
+    import openai
+except ModuleNotFoundError:
+    st.error("⚠️ openai 라이브러리가 설치되지 않았습니다. requirements.txt 파일을 확인하세요.")
+    openai = None
 
-# 🎧 페이지 설정
-st.set_page_config(page_title="노래 추천기🎶", page_icon="🎸")
-st.title("🎤 키워드를 입력하면 AI가 노래를 추천해줄게!")
-st.markdown("ex) 감성, 기타, 몽환적인, 드라이브할 때 듣기 좋은 노래 등 자유롭게 입력하세요!")
+# 페이지 기본 설정
+st.set_page_config(page_title="노래 추천기 🎵", page_icon="🎧")
+st.title("🎧 키워드를 추가해서 노래 추천 받기")
+st.markdown("예: 감성, 사랑, 락, 팝송 등 자유롭게 키워드를 추가해보세요!")
 
-# 사용자 입력
-user_input = st.text_input("🎵 어떤 분위기의 노래를 원해?", placeholder="예: 잔잔하고 기타가 예쁜 노래")
+# 키워드 입력 및 저장용 세션 상태
+if "keywords" not in st.session_state:
+    st.session_state["keywords"] = []
 
-# 결과 버튼
-if st.button("🎶 노래 추천 받기") and user_input:
-    with st.spinner("AI가 생각 중...💭"):
-        prompt = f"""
-        다음 키워드를 가진 한국 대중음악 추천 3곡을 해줘. 각 곡에는 제목, 아티스트, 유튜브 링크를 포함해줘.
-        키워드: {user_input}
+# 키워드 입력 창
+new_keyword = st.text_input("🎵 키워드 입력", placeholder="예: 감성")
 
-        출력 예시:
-        1. 곡 제목 - 아티스트 (YouTube 링크)
-        2. ...
-        """
+# 키워드 추가 버튼
+if st.button("➕ 키워드 추가"):
+    if new_keyword and new_keyword.strip() != "":
+        st.session_state.keywords.append(new_keyword.strip())
+        st.success(f"'{new_keyword}' 키워드가 추가되었어요!")
 
-        try:
-            response = openai.ChatCompletion.create(
-                model="gpt-3.5-turbo",  # gpt-4도 가능
-                messages=[{"role": "user", "content": prompt}],
-                temperature=0.8
-            )
-            answer = response.choices[0].message.content
-            st.markdown("### ✅ 추천된 노래들:")
-            st.markdown(answer)
-        except Exception as e:
-            st.error("❌ 에러가 발생했어요: " + str(e))
+# 현재 키워드 리스트 보여주기
+if st.session_state.keywords:
+    st.markdown("#### 📌 현재 키워드:")
+    st.write(", ".join(st.session_state.keywords))
+    if st.button("❌ 키워드 모두 초기화"):
+        st.session_state.keywords = []
 
+# 추천 버튼
+if st.button("🎶 추천 받기") and st.session_state.keywords:
+    if openai is None:
+        st.error("OpenAI 라이브러리가 설치되지 않았습니다.")
+    else:
+        with st.spinner("AI가 음악을 추천 중이에요...🎧"):
+            try:
+                openai.api_key = st.secrets["OPENAI_API_KEY"]
+
+                # 키워드들을 문자열로 연결
+                keywords_str = ", ".join(st.session_state.keywords)
+
+                # GPT에게 줄 프롬프트
+                prompt = f"""
+                다음 키워드를 기반으로 한국 혹은 팝송 중에서 어울리는 음악을 3곡 추천해줘.
+                각 곡은 아래 형식으로 출력해줘:
+                1. 곡 제목 - 아티스트 (YouTube 링크)
+                키워드: {keywords_str}
+                """
+
+                response = openai.ChatCompletion.create(
+                    model="gpt-3.5-turbo",
+                    messages=[{"role": "user", "content": prompt}],
+                    temperature=0.8
+                )
+
+                answer = response.choices[0].message.content
+                st.subheader("🎵 AI 추천 결과:")
+                st.markdown(answer)
+
+            except Exception as e:
+                st.error(f"OpenAI 호출 중 오류: {e}")
