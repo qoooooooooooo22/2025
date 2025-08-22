@@ -64,9 +64,12 @@ if st.button("🎶 추천 받기") and st.session_state.keywords:
                     키워드: {keywords_str}
                     """
 
+                    # 한글 안전 처리
+                    prompt_utf8 = prompt.encode('utf-8').decode('utf-8')
+
                     response = client.chat.completions.create(
                         model="gpt-3.5-turbo",
-                        messages=[{"role": "user", "content": prompt}],
+                        messages=[{"role": "user", "content": prompt_utf8}],
                         temperature=0.8
                     )
 
