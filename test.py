@@ -1,4 +1,9 @@
 import streamlit as st
+import sys
+import io
+
+# stdout 한글 안전 처리
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
 # openai 설치 여부 확인
 try:
@@ -18,7 +23,7 @@ if "keywords" not in st.session_state:
 if "new_keyword" not in st.session_state:
     st.session_state["new_keyword"] = ""
 
-# 키워드 추가 함수 (엔터 입력 시)
+# 키워드 추가 함수
 def add_keyword():
     keyword = st.session_state.new_keyword.strip()
     if keyword and keyword not in st.session_state.keywords:
@@ -45,7 +50,6 @@ if st.button("🎶 추천 받기") and st.session_state.keywords:
     if openai is None:
         st.error("OpenAI 라이브러리가 설치되지 않았습니다.")
     else:
-        # OpenAI API 키 불러오기
         try:
             client = openai.OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
         except KeyError:
@@ -64,12 +68,10 @@ if st.button("🎶 추천 받기") and st.session_state.keywords:
                     키워드: {keywords_str}
                     """
 
-                    # 한글 안전 처리
-                    prompt_utf8 = prompt.encode('utf-8').decode('utf-8')
-
+                    # OpenAI 1.0.0+ API 호출
                     response = client.chat.completions.create(
                         model="gpt-3.5-turbo",
-                        messages=[{"role": "user", "content": prompt_utf8}],
+                        messages=[{"role": "user", "content": prompt}],
                         temperature=0.8
                     )
 
