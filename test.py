@@ -4,8 +4,13 @@ import streamlit as st
 try:
     import openai
 except ModuleNotFoundError:
-    st.error("⚠️ openai 라이브러리가 설치되지 않았습니다. requirements.txt 파일을 확인하세요.")
+    st.error("⚠️ openai 라이브러리가 설치되지 않았습니다. requirements.txt 확인")
     openai = None
+
+# 페이지 설정
+st.set_page_config(page_title="🎵 음악 추천기", page_icon="🎧")
+st.title("🎤 키워드 기반 노래 추천기")
+st.markdown("키워드를 입력하고 엔터를 치면 자동으로 추가됩니다. 예: 감성, 사랑, 락, 팝송")
 
 # 세션 상태 초기화
 if "keywords" not in st.session_state:
@@ -13,41 +18,41 @@ if "keywords" not in st.session_state:
 if "new_keyword" not in st.session_state:
     st.session_state["new_keyword"] = ""
 
-# 키워드 추가 함수 (엔터로 입력되었을 때 실행됨)
+# 키워드 추가 함수 (엔터 입력 시)
 def add_keyword():
     keyword = st.session_state.new_keyword.strip()
     if keyword and keyword not in st.session_state.keywords:
         st.session_state.keywords.append(keyword)
     st.session_state.new_keyword = ""  # 입력창 초기화
 
-# 페이지 UI
-st.set_page_config(page_title="노래 추천기 🎵", page_icon="🎧")
-st.title("🎧 키워드를 추가해서 노래 추천 받기")
-st.markdown("예: 감성, 사랑, 락, 팝송 등 키워드를 엔터로 추가해보세요!")
-
-# 키워드 입력 (엔터만 치면 바로 추가됨)
-st.text_input("🎵 키워드 입력", 
-              key="new_keyword", 
-              placeholder="예: 몽환적인, 에너지 넘치는", 
-              on_change=add_keyword)
+# 키워드 입력 (엔터로 추가)
+st.text_input(
+    "🎵 키워드 입력", 
+    key="new_keyword", 
+    placeholder="예: 몽환적, 에너지 넘치는", 
+    on_change=add_keyword
+)
 
 # 키워드 리스트 출력
 if st.session_state.keywords:
     st.markdown("#### 📌 현재 키워드:")
     st.write(", ".join(st.session_state.keywords))
-
     if st.button("❌ 키워드 모두 초기화"):
         st.session_state.keywords = []
 
-# 추천 받기 버튼
+# 추천 버튼
 if st.button("🎶 추천 받기") and st.session_state.keywords:
     if openai is None:
         st.error("OpenAI 라이브러리가 설치되지 않았습니다.")
     else:
-        with st.spinner("AI가 음악을 추천 중이에요...🎧"):
+        # OpenAI API 키 불러오기 (Secrets)
+        try:
+            openai.api_key = st.secrets["OPENAI_API_KEY"]
+        except KeyError:
+            st.error("❌ OPENAI_API_KEY가 st.secrets에 없습니다. Streamlit Cloud settings → Secrets에 추가하세요.")
+        
+        with st.spinner("AI가 음악 추천 중...🎧"):
             try:
-                openai.api_key = st.secrets["OPENAI_API_KEY"]
-
                 keywords_str = ", ".join(st.session_state.keywords)
 
                 prompt = f"""
