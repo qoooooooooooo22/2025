@@ -45,32 +45,34 @@ if st.button("🎶 추천 받기") and st.session_state.keywords:
     if openai is None:
         st.error("OpenAI 라이브러리가 설치되지 않았습니다.")
     else:
-        # OpenAI API 키 불러오기 (Secrets)
+        # OpenAI API 키 불러오기
         try:
-            openai.api_key = st.secrets["OPENAI_API_KEY"]
+            client = openai.OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
         except KeyError:
             st.error("❌ OPENAI_API_KEY가 st.secrets에 없습니다. Streamlit Cloud settings → Secrets에 추가하세요.")
-        
-        with st.spinner("AI가 음악 추천 중...🎧"):
-            try:
-                keywords_str = ", ".join(st.session_state.keywords)
+            client = None
 
-                prompt = f"""
-                다음 키워드를 기반으로 한국 음악 또는 팝송 중 어울리는 노래 3곡을 추천해줘.
-                각 곡은 다음 형식으로 출력해줘:
-                1. 곡 제목 - 아티스트 (YouTube 링크)
-                키워드: {keywords_str}
-                """
+        if client:
+            with st.spinner("AI가 음악 추천 중...🎧"):
+                try:
+                    keywords_str = ", ".join(st.session_state.keywords)
 
-                response = openai.ChatCompletion.create(
-                    model="gpt-3.5-turbo",
-                    messages=[{"role": "user", "content": prompt}],
-                    temperature=0.8
-                )
+                    prompt = f"""
+                    다음 키워드를 기반으로 한국 음악 또는 팝송 중 어울리는 노래 3곡을 추천해줘.
+                    각 곡은 다음 형식으로 출력해줘:
+                    1. 곡 제목 - 아티스트 (YouTube 링크)
+                    키워드: {keywords_str}
+                    """
 
-                result = response.choices[0].message.content
-                st.subheader("🎵 AI 추천 결과:")
-                st.markdown(result)
+                    response = client.chat.completions.create(
+                        model="gpt-3.5-turbo",
+                        messages=[{"role": "user", "content": prompt}],
+                        temperature=0.8
+                    )
 
-            except Exception as e:
-                st.error(f"OpenAI 호출 중 오류: {e}")
+                    result = response.choices[0].message.content
+                    st.subheader("🎵 AI 추천 결과:")
+                    st.markdown(result)
+
+                except Exception as e:
+                    st.error(f"OpenAI 호출 중 오류: {e}")
