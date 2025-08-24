@@ -5,9 +5,9 @@ import openai
 # --- 페이지 설정 ---
 st.set_page_config(page_title="감정 음악 추천기", page_icon="🎵")
 
-# --- API 키 (발급받은 것 넣기) ---
-OPENAI_API_KEY = "sk-너의_sk-proj-XcKM61aLZBUULIDzZ8jpM2vlEQXleCh1hFoydKz2cCmf76Ur_-YazZ_-bcywVq4MqthEzOxfOIT3BlbkFJgp8PLt_zIus7JB3bWdtNLce3FkHqF-P0J8rOpNpXzqHuTrfCONF32z81IiucdopIDkyR5XUpYA"   # 💡 공백 없게 붙여넣기
-YOUTUBE_API_KEY = "AIzaSyBLuzIZRaRKshJJkGClpLDrPB55F0ETfVo"  # 💡 공백 없게 붙여넣기
+# --- API 키 ---
+OPENAI_API_KEY = "sk-너의_OpenAI_API_키"   # 💡 공백 없이 붙여넣기
+YOUTUBE_API_KEY = "여기_너의_YouTube_API_키"  # 💡 공백 없이 붙여넣기
 
 # --- 감정 이모지 ---
 emoji_map = {
@@ -23,7 +23,7 @@ emoji_map = {
     "슬픔": "😢"
 }
 
-# --- GPT로 노래 추천 ---
+# --- GPT 추천곡 ---
 def generate_song_recommendations(emotion, api_key):
     openai.api_key = api_key
     prompt = f"""
@@ -39,6 +39,8 @@ def generate_song_recommendations(emotion, api_key):
             temperature=0.8
         )
         reply = response.choices[0].message["content"]
+        # UTF-8 안전 처리
+        reply = reply.encode('utf-8', errors='ignore').decode('utf-8')
         return [line.strip() for line in reply.strip().split("\n") if line.strip()]
     except Exception as e:
         st.error(f"GPT 오류 발생: {e}")
@@ -78,13 +80,15 @@ if st.button("🎧 AI 추천곡 받아보기"):
     if songs:
         st.markdown(f"## {emoji} {selected_emotion} 감정에 어울리는 노래들")
         for song in songs:
-            yt = search_youtube_video(YOUTUBE_API_KEY, song)
+            # UTF-8 처리
+            safe_song = song.encode('utf-8', errors='ignore').decode('utf-8')
+            yt = search_youtube_video(YOUTUBE_API_KEY, safe_song)
             if yt:
                 st.image(yt["thumbnail"], use_container_width=True)
                 st.markdown(f"**🎵 {yt['title']}**")
                 st.markdown(f"[📺 YouTube에서 보기]({yt['url']})")
                 st.markdown("---")
             else:
-                st.warning(f"🔍 '{song}' 영상 못 찾음")
+                st.warning(f"🔍 '{safe_song}' 영상 못 찾음")
     else:
         st.error("노래 추천을 가져오지 못했어요. 다시 시도하세요.")
