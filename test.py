@@ -1,48 +1,33 @@
+import streamlit as st
+import streamlit.components.v1 as components
+
+st.set_page_config(page_title="감정 기반 음악 추천", page_icon="🎶", layout="wide")
+
+st.title("🎶 감정 기반 음악 추천")
+
+html_code = """
 <!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🎶 감정 기반 음악 추천</title>
 <style>
-body {
-  margin:0; padding:0;
-  font-family: 'Arial', sans-serif;
-  background-color: #121212;
-  color: #fff;
-  display:flex; justify-content:center; align-items:flex-start;
-}
-.container {
-  max-width:1200px; width:100%; padding:50px 20px; text-align:center;
-}
-h1 { font-size:3rem; margin-bottom:30px; animation:fadeIn 1s ease-out;}
-select, button {
-  background-color:#333; color:#fff; border:none; padding:10px 20px;
-  font-size:1rem; border-radius:5px; cursor:pointer; margin:10px; transition:0.3s;
-}
+body { margin:0; padding:0; font-family:'Arial', sans-serif; background-color:#121212; color:#fff; }
+.container { max-width:1200px; width:100%; padding:30px; text-align:center; }
+h1 { font-size:2.5rem; margin-bottom:20px; }
+select, button { background-color:#333; color:#fff; border:none; padding:10px 20px; font-size:1rem; border-radius:5px; cursor:pointer; margin:10px; transition:0.3s; }
 select:hover, button:hover { background-color:#444; }
-.song-list { display:flex; flex-wrap:wrap; justify-content:center; gap:20px; margin-top:30px;}
-.song-card {
-  background-color:#1e1e1e; padding:20px; border-radius:10px; width:250px;
-  text-align:left; box-shadow:0 4px 8px rgba(0,0,0,0.2); transition:transform 0.3s ease;
-}
+.song-list { display:flex; flex-wrap:wrap; justify-content:center; gap:20px; margin-top:20px; }
+.song-card { background-color:#1e1e1e; padding:20px; border-radius:10px; width:250px; text-align:left; box-shadow:0 4px 8px rgba(0,0,0,0.2); transition:transform 0.3s ease; }
 .song-card:hover { transform:translateY(-10px); }
 .song-card img { width:100%; border-radius:10px; }
-.song-card h3 { font-size:1.2rem; margin:10px 0; }
-.song-card a {
-  display:inline-block; margin-top:10px; padding:8px 15px; background-color:#ff4081;
-  color:#fff; text-decoration:none; border-radius:5px; transition:0.3s;
-}
+.song-card h3 { font-size:1.1rem; margin:10px 0; }
+.song-card a { display:inline-block; margin-top:10px; padding:8px 15px; background-color:#ff4081; color:#fff; text-decoration:none; border-radius:5px; transition:0.3s; }
 .song-card a:hover { background-color:#e040fb; }
-@keyframes fadeIn {
-  0% {opacity:0; transform:translateY(20px);}
-  100% {opacity:1; transform:translateY(0);}
-}
 </style>
 </head>
 <body>
 <div class="container">
-  <h1>🎶 감정 기반 음악 추천</h1>
   <select id="emotionSelect">
     <option value="사랑">사랑 💕</option>
     <option value="슬픔">슬픔 😢</option>
@@ -60,7 +45,6 @@ select:hover, button:hover { background-color:#444; }
 </div>
 
 <script>
-// 10가지 감정 × 30곡 데이터 (재즈/팝 등 다양한 장르 포함)
 const emotionSongs = {
   "사랑": ["All of Me John Legend","Just the Way You Are Bruno Mars","Fly Me to the Moon Frank Sinatra","Lover Taylor Swift","Your Song Elton John","At Last Etta James","Perfect Ed Sheeran","Can't Help Falling in Love Elvis Presley","Endless Love Diana Ross & Lionel Richie","Make You Feel My Love Adele","Something The Beatles","When I Fall in Love Nat King Cole","My Heart Will Go On Celine Dion","I Will Always Love You Whitney Houston","Love Story Taylor Swift","Thinking Out Loud Ed Sheeran","How Deep Is Your Love Bee Gees","Unchained Melody The Righteous Brothers","All My Life K-Ci & JoJo","Because You Loved Me Celine Dion","A Thousand Years Christina Perri","Vision of Love Mariah Carey","Everything Michael Bublé","I Just Called to Say I Love You Stevie Wonder","Truly Madly Deeply Savage Garden","Bleeding Love Leona Lewis","Time After Time Cyndi Lauper","Endless Love Luther Vandross","Kiss Me Sixpence None the Richer"],
   "슬픔": ["Someone Like You Adele","Hurt Johnny Cash","Tears Dry on Their Own Amy Winehouse","Everybody Hurts R.E.M.","Nothing Compares 2 U Sinéad O'Connor","Creep Radiohead","The Sound of Silence Simon & Garfunkel","My Immortal Evanescence","Back to Black Amy Winehouse","Yesterday The Beatles","Fade to Black Metallica","Goodbye My Lover James Blunt","All I Want Kodaline","Skinny Love Bon Iver","I Will Always Love You Whitney Houston","Jar of Hearts Christina Perri","Say Something A Great Big World","Lost Cause Billie Eilish","Everybody's Got to Learn Sometime The Korgis","With or Without You U2","Hallelujah Jeff Buckley","End of the Road Boyz II Men","I Can't Make You Love Me Bonnie Raitt","Nothing Else Matters Metallica","One Last Time Ariana Grande","Bleeding Love Leona Lewis","Angels Robbie Williams","Yesterday Once More Carpenters","Back to December Taylor Swift","Don't Speak No Doubt"],
@@ -104,3 +88,6 @@ displaySongs(); // 초기 로드 시
 </script>
 </body>
 </html>
+"""
+
+components.html(html_code, height=800)
