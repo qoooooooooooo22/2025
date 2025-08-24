@@ -72,7 +72,7 @@ if selected_emotion:
     for song in songs:
         result = search_youtube_video(YOUTUBE_API_KEY, song)
         if result:
-            st.image(result["thumbnail"], use_column_width=True)
+            st.image(result["thumbnail"], use_container_width=True)
             st.markdown(f"**🎵 {result['title']}**")
             st.markdown(f"[📺 YouTube에서 보기]({result['url']})")
             st.markdown("---")
