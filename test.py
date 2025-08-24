@@ -5,7 +5,7 @@ import requests
 st.set_page_config(page_title="감정 음악 추천기 (무료 안정화)", page_icon="🎵")
 
 # --- YouTube API 키 ---
-YOUTUBE_API_KEY = "여기에_너의_YouTube_API_키"
+YOUTUBE_API_KEY = "AIzaSyBLuzIZRaRKshJJkGClpLDrPB55F0ETfVo"
 
 # --- 감정별 노래 추천 ---
 emotion_songs = {
