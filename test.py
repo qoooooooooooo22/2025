@@ -5,11 +5,11 @@ import openai
 # --- 페이지 설정 ---
 st.set_page_config(page_title="감정 음악 추천기", page_icon="🎵")
 
-# --- API 키 설정 (직접 넣거나 secrets.toml로 분리 가능) ---
-OPENAI_API_KEY = "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"
-YOUTUBE_API_KEY = "AIzaSyAWFpXlAuf3FrBggJAxLkw1tnSw_yhH9DU"
+# --- API 키 (발급받은 것 넣기) ---
+OPENAI_API_KEY = "sk-너의_sk-proj-XcKM61aLZBUULIDzZ8jpM2vlEQXleCh1hFoydKz2cCmf76Ur_-YazZ_-bcywVq4MqthEzOxfOIT3BlbkFJgp8PLt_zIus7JB3bWdtNLce3FkHqF-P0J8rOpNpXzqHuTrfCONF32z81IiucdopIDkyR5XUpYA"   # 💡 공백 없게 붙여넣기
+YOUTUBE_API_KEY = "여기_너의_YouTube_API_키"  # 💡 공백 없게 붙여넣기
 
-# --- 감정 이모지 맵 ---
+# --- 감정 이모지 ---
 emoji_map = {
     "사랑": "💕",
     "이별": "💔",
@@ -24,16 +24,14 @@ emoji_map = {
 }
 
 # --- GPT로 노래 추천 ---
-def generate_song_recommendations(emotion, openai_api_key):
-    openai.api_key = openai_api_key
-
+def generate_song_recommendations(emotion, api_key):
+    openai.api_key = api_key
     prompt = f"""
-    당신은 감정에 어울리는 음악을 추천하는 전문가입니다.
+    당신은 감정에 맞는 노래를 추천하는 전문가입니다.
     감정: {emotion}
-    그 감정에 어울리는 한국 대중가요 3곡을 '제목 - 가수' 형식으로 추천해주세요.
-    유튜브에서 쉽게 찾을 수 있는 노래로 부탁드립니다.
+    이 감정에 맞는 한국 대중가요 3곡을 '제목 - 가수' 형식으로 추천해주세요.
+    유튜브에서 쉽게 찾을 수 있는 노래로 해주세요.
     """
-
     try:
         response = openai.ChatCompletion.create(
             model="gpt-4",
@@ -48,7 +46,7 @@ def generate_song_recommendations(emotion, openai_api_key):
 
 # --- YouTube 검색 ---
 def search_youtube_video(api_key, query):
-    search_url = "https://www.googleapis.com/youtube/v3/search"
+    url = "https://www.googleapis.com/youtube/v3/search"
     params = {
         "part": "snippet",
         "q": query,
@@ -56,39 +54,37 @@ def search_youtube_video(api_key, query):
         "maxResults": 1,
         "key": api_key
     }
-    response = requests.get(search_url, params=params)
-    results = response.json()
-
+    resp = requests.get(url, params=params)
+    results = resp.json()
     if "items" in results and len(results["items"]) > 0:
-        video = results["items"][0]
-        video_id = video["id"]["videoId"]
-        title = video["snippet"]["title"]
-        thumbnail = video["snippet"]["thumbnails"]["high"]["url"]
-        video_url = f"https://www.youtube.com/watch?v={video_id}"
-        return {"title": title, "url": video_url, "thumbnail": thumbnail}
-    else:
-        return None
+        vid = results["items"][0]
+        vid_id = vid["id"]["videoId"]
+        title = vid["snippet"]["title"]
+        thumb = vid["snippet"]["thumbnails"]["high"]["url"]
+        url = f"https://www.youtube.com/watch?v={vid_id}"
+        return {"title": title, "url": url, "thumbnail": thumb}
+    return None
 
-# --- UI 시작 ---
+# --- UI ---
 st.title("🎶 감정 키워드 기반 음악 추천기 (GPT + YouTube)")
 
 selected_emotion = st.selectbox("오늘 당신의 감정은?", list(emoji_map.keys()))
 emoji = emoji_map.get(selected_emotion, "")
 
 if st.button("🎧 AI 추천곡 받아보기"):
-    with st.spinner("AI가 당신의 감정에 어울리는 노래를 찾는 중..."):
+    with st.spinner("AI가 추천곡을 찾는 중..."):
         songs = generate_song_recommendations(selected_emotion, OPENAI_API_KEY)
 
     if songs:
         st.markdown(f"## {emoji} {selected_emotion} 감정에 어울리는 노래들")
         for song in songs:
-            yt_result = search_youtube_video(YOUTUBE_API_KEY, song)
-            if yt_result:
-                st.image(yt_result["thumbnail"], use_container_width=True)
-                st.markdown(f"**🎵 {yt_result['title']}**")
-                st.markdown(f"[📺 YouTube에서 보기]({yt_result['url']})")
+            yt = search_youtube_video(YOUTUBE_API_KEY, song)
+            if yt:
+                st.image(yt["thumbnail"], use_container_width=True)
+                st.markdown(f"**🎵 {yt['title']}**")
+                st.markdown(f"[📺 YouTube에서 보기]({yt['url']})")
                 st.markdown("---")
             else:
-                st.warning(f"🔍 '{song}'에 대한 YouTube 영상을 찾지 못했어요.")
+                st.warning(f"🔍 '{song}' 영상 못 찾음")
     else:
-        st.error("노래 추천을 가져오지 못했어요. 다시 시도해보세요.")
+        st.error("노래 추천을 가져오지 못했어요. 다시 시도하세요.")
