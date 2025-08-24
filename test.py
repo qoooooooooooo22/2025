@@ -6,7 +6,7 @@ import openai
 st.set_page_config(page_title="감정 음악 추천기", page_icon="🎵")
 
 # --- API 키 ---
-OPENAI_API_KEY = "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"   # 💡 공백 없이 붙여넣기
+OPENAI_API_KEY = "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"   # 💡 공백 없이 붙여넣기
 YOUTUBE_API_KEY = "AIzaSyBLuzIZRaRKshJJkGClpLDrPB55F0E" 
 
 # --- 감정 이모지 ---
