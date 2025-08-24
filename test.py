@@ -6,7 +6,7 @@ import openai
 st.set_page_config(page_title="감정 음악 추천기", page_icon="🎵")
 
 # --- API 키 설정 (직접 넣거나 secrets.toml로 분리 가능) ---
-OPENAI_API_KEY = "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"
+OPENAI_API_KEY = "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"
 YOUTUBE_API_KEY = "AIzaSyAWFpXlAuf3FrBggJAxLkw1tnSw_yhH9DU"
 
 # --- 감정 이모지 맵 ---
