@@ -1,24 +1,47 @@
 import streamlit as st
 import requests
+import random
 
 # --- 페이지 설정 ---
-st.set_page_config(page_title="감정 음악 추천기 (무료 안정화)", page_icon="🎵")
+st.set_page_config(page_title="감정 음악 추천기 (무료+무작위)", page_icon="🎵")
 
 # --- YouTube API 키 ---
 YOUTUBE_API_KEY = "AIzaSyBLuzIZRaRKshJJkGClpLDrPB55F0ETfVo"
 
-# --- 감정별 노래 추천 ---
+# --- 감정별 노래 리스트 (장르 다양화) ---
 emotion_songs = {
-    "사랑": ["Fake Love 방탄소년단", "사랑했나봐 윤도현", "첫눈처럼 너에게 가겠다 에일리"],
-    "이별": ["눈의 꽃 박효신", "이별택시 멜로망스", "안녕 폴킴"],
-    "집착": ["HOT HOT", "미쳐 싸이", "어쩌면 좋아 장범준"],
-    "행복": ["좋은 날 아이유", "Dynamite 방탄소년단", "LALISA 리사"],
-    "귀여움": ["TT 트와이스", "Ice Cream BLACKPINK", "DALLA DALLA ITZY"],
-    "우정": ["우정의 노래 트와이스", "우리가 만난 기적 에픽하이", "친구라도 될 걸 그랬어 볼빨간사춘기"],
-    "위로": ["그대라는 사치 한동근", "위로 윤하", "걱정말아요 그대 이적"],
-    "추억": ["벚꽃 엔딩 버스커 버스커", "너의 의미 아이유", "봄날 방탄소년단"],
-    "그리움": ["밤편지 아이유", "Missing You BTOB", "보고싶다 김범수"],
-    "슬픔": ["눈물의 이유 윤미래", "사랑비 김태우", "어른 소유"]
+    "사랑": [
+        "All of Me John Legend", "Just the Way You Are Bruno Mars", "Fly Me to the Moon Frank Sinatra",
+        "Lover Taylor Swift", "Your Song Elton John", "At Last Etta James"
+    ],
+    "이별": [
+        "Someone Like You Adele", "Back to December Taylor Swift", "Ne Me Quitte Pas Jacques Brel",
+        "Un-break My Heart Toni Braxton", "Tears Dry on Their Own Amy Winehouse"
+    ],
+    "집착": [
+        "Every Breath You Take The Police", "Obsessed Mariah Carey", "Creep Radiohead"
+    ],
+    "행복": [
+        "Happy Pharrell Williams", "Walking on Sunshine Katrina & The Waves", "Can't Stop the Feeling Justin Timberlake"
+    ],
+    "귀여움": [
+        "Sugar Maroon 5", "Call Me Maybe Carly Rae Jepsen", "Shake It Off Taylor Swift"
+    ],
+    "우정": [
+        "Lean On Me Bill Withers", "Count on Me Bruno Mars", "With a Little Help From My Friends The Beatles"
+    ],
+    "위로": [
+        "Fix You Coldplay", "Stand By Me Ben E. King", "Hallelujah Jeff Buckley"
+    ],
+    "추억": [
+        "Yesterday The Beatles", "Summer of '69 Bryan Adams", "Viva La Vida Coldplay"
+    ],
+    "그리움": [
+        "I Will Remember You Sarah McLachlan", "Somewhere I Belong Linkin Park", "Photograph Ed Sheeran"
+    ],
+    "슬픔": [
+        "Mad World Gary Jules", "The Sound of Silence Simon & Garfunkel", "Everybody Hurts R.E.M."
+    ]
 }
 
 emoji_map = {
@@ -33,7 +56,7 @@ def search_youtube_video(api_key, query):
         "part": "snippet",
         "q": query,
         "type": "video",
-        "maxResults": 5,  # 여러 개 가져와서 정확도 높임
+        "maxResults": 5,  # 여러 영상 가져오기
         "key": api_key
     }
     resp = requests.get(url, params=params)
@@ -44,20 +67,23 @@ def search_youtube_video(api_key, query):
             title = vid["snippet"]["title"]
             thumb = vid["snippet"]["thumbnails"]["high"]["url"]
             url = f"https://www.youtube.com/watch?v={vid_id}"
-            # 제목에 검색어 일부라도 포함되면 반환
-            if query.split()[0].lower() in title.lower():
+            if query.split()[0].lower() in title.lower():  # 검색어 일부 포함
                 return {"title": title, "url": url, "thumbnail": thumb}
     return None
 
 # --- UI ---
-st.title("🎶 감정 키워드 기반 음악 추천기 (무료 안정화)")
+st.title("🎶 감정 키워드 기반 음악 추천기 (무료+무작위)")
 
 selected_emotion = st.selectbox("오늘 당신의 감정은?", list(emotion_songs.keys()))
 emoji = emoji_map.get(selected_emotion, "")
 
 if st.button("🎧 추천곡 보기"):
     st.markdown(f"## {emoji} {selected_emotion} 감정에 어울리는 노래들")
-    for song in emotion_songs[selected_emotion]:
+
+    # --- 무작위 추천: 감정 리스트에서 3곡 선택 ---
+    songs = random.sample(emotion_songs[selected_emotion], k=min(3, len(emotion_songs[selected_emotion])))
+
+    for song in songs:
         yt = search_youtube_video(YOUTUBE_API_KEY, song)
         if yt:
             st.image(yt["thumbnail"], use_container_width=True)
