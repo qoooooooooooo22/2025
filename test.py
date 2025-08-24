@@ -8,7 +8,7 @@ st.set_page_config(page_title="감정 음악 추천기 (30곡 무작위)", page_
 # --- YouTube API 키 ---
 YOUTUBE_API_KEY = "AIzaSyBLuzIZRaRKshJJkGClpLDrPB55F0ETfVo"
 
-# --- 감정별 30곡 리스트 예시 (다양한 장르 포함) ---
+# --- 감정별 30곡 리스트 (완전 다른 곡, 장르 다양화) ---
 emotion_songs = {
     "사랑": [
         "All of Me John Legend", "Just the Way You Are Bruno Mars", "Fly Me to the Moon Frank Sinatra",
@@ -22,17 +22,51 @@ emotion_songs = {
         "Truly Madly Deeply Savage Garden", "Bleeding Love Leona Lewis", "Time After Time Cyndi Lauper",
         "Endless Love Luther Vandross", "Kiss Me Sixpence None the Richer"
     ],
-    # 다른 감정도 비슷하게 30곡 정도 추가
-    "이별": ["Someone Like You Adele", "Back to December Taylor Swift", "Ne Me Quitte Pas Jacques Brel",
-            "Un-break My Heart Toni Braxton", "Tears Dry on Their Own Amy Winehouse"] * 6,  # 임시 반복
-    "집착": ["Every Breath You Take The Police", "Obsessed Mariah Carey", "Creep Radiohead"] * 10,
-    "행복": ["Happy Pharrell Williams", "Walking on Sunshine Katrina & The Waves", "Can't Stop the Feeling Justin Timberlake"] * 10,
-    "귀여움": ["Sugar Maroon 5", "Call Me Maybe Carly Rae Jepsen", "Shake It Off Taylor Swift"] * 10,
-    "우정": ["Lean On Me Bill Withers", "Count on Me Bruno Mars", "With a Little Help From My Friends The Beatles"] * 10,
-    "위로": ["Fix You Coldplay", "Stand By Me Ben E. King", "Hallelujah Jeff Buckley"] * 10,
-    "추억": ["Yesterday The Beatles", "Summer of '69 Bryan Adams', 'Viva La Vida Coldplay"] * 10,
-    "그리움": ["I Will Remember You Sarah McLachlan", "Somewhere I Belong Linkin Park", "Photograph Ed Sheeran"] * 10,
-    "슬픔": ["Mad World Gary Jules", "The Sound of Silence Simon & Garfunkel", "Everybody Hurts R.E.M."] * 10
+    "이별": [
+        "Someone Like You Adele", "Back to December Taylor Swift", "Ne Me Quitte Pas Jacques Brel",
+        "Un-break My Heart Toni Braxton", "Tears Dry on Their Own Amy Winehouse", "All I Want Kodaline",
+        "Stay Rihanna", "When I Was Your Man Bruno Mars", "Skinny Love Bon Iver",
+        "Say Something A Great Big World", "Happier Ed Sheeran", "Lose You to Love Me Selena Gomez",
+        "Too Good at Goodbyes Sam Smith", "Goodbye My Lover James Blunt", "Jealous Labrinth",
+        "Nothing Compares 2 U Sinéad O'Connor", "Without You Mariah Carey", "Crying Roy Orbison",
+        "Somebody That I Used to Know Gotye", "Blue Ain't Your Color Keith Urban", "Last Kiss Taylor Swift",
+        "The Night We Met Lord Huron", "Back to Black Amy Winehouse", "I Can't Make You Love Me Bonnie Raitt",
+        "Hard to Say I'm Sorry Chicago", "Everybody Hurts R.E.M.", "Lost Without You Freya Ridings",
+        "All I Ask Adele", "Hello Lionel Richie"
+    ],
+    "집착": [
+        "Every Breath You Take The Police", "Obsessed Mariah Carey", "Creep Radiohead",
+        "Stalker Dua Lipa", "Possessive Ne-Yo", "Control Janet Jackson", "I Want You Savage Garden",
+        "Jealous Nick Jonas", "Can't Get You Out of My Head Kylie Minogue", "Toxic Britney Spears",
+        "Bad Guy Billie Eilish", "Rolling in the Deep Adele", "Black Magic Little Mix", "Problem Ariana Grande",
+        "Complicated Avril Lavigne", "Boulevard of Broken Dreams Green Day", "Locked Out of Heaven Bruno Mars",
+        "Shape of You Ed Sheeran", "Somebody to Love Queen", "Addicted Kelly Clarkson", "Say My Name Destiny's Child",
+        "Love Me Harder Ariana Grande", "Bleeding Love Leona Lewis", "Attention Charlie Puth", "Love on the Brain Rihanna",
+        "In the End Linkin Park", "Hotline Bling Drake", "Like a Stone Audioslave", "Disturbia Rihanna", "You Belong With Me Taylor Swift"
+    ],
+    "행복": [
+        "Happy Pharrell Williams", "Walking on Sunshine Katrina & The Waves", "Can't Stop the Feeling Justin Timberlake",
+        "Uptown Funk Mark Ronson ft. Bruno Mars", "Shake It Off Taylor Swift", "Good Life OneRepublic",
+        "Best Day of My Life American Authors", "I'm a Believer Smash Mouth", "I'm Yours Jason Mraz",
+        "Roar Katy Perry", "I Gotta Feeling Black Eyed Peas", "Don't Worry Be Happy Bobby McFerrin",
+        "Good Time Owl City & Carly Rae Jepsen", "Cheerleader OMI", "Sugar Maroon 5",
+        "Don't Stop Me Now Queen", "Valerie Amy Winehouse", "Can't Stop Loving You Phil Collins",
+        "Send Me On My Way Rusted Root", "Firework Katy Perry", "Pocketful of Sunshine Natasha Bedingfield",
+        "Love on Top Beyoncé", "Treasure Bruno Mars", "Counting Stars OneRepublic", "Dancing Queen ABBA",
+        "La La La Naughty Boy", "Viva La Vida Coldplay", "Love Me Like You Do Ellie Goulding", "Domino Jessie J"
+    ],
+    "귀여움": [
+        "Call Me Maybe Carly Rae Jepsen", "TT TWICE", "Ice Cream BLACKPINK", "DALLA DALLA ITZY",
+        "Sugar Maroon 5", "Lollipop Mika", "Barbie Girl Aqua", "I'm a Gummy Bear Gummy Bear",
+        "Happy Happy TWICE", "Cheer Up TWICE", "Ponyo Ponyo", "Havana Camila Cabello", "Shake It Off Taylor Swift",
+        "Bubbly Colbie Caillat", "What Makes You Beautiful One Direction", "Baby Justin Bieber",
+        "La La La LMFAO", "Wannabe Spice Girls", "I Like to Move It Reel 2 Real", "Friday Rebecca Black",
+        "Girls Just Want to Have Fun Cyndi Lauper", "Uptown Girl Billy Joel", "Cups Anna Kendrick",
+        "Hey Mickey Toni Basil", "Boom Clap Charli XCX", "I Wanna Dance with Somebody Whitney Houston",
+        "I’m So Excited Pointer Sisters", "Sugar Sugar Archies", "Walking on Sunshine Katrina & The Waves",
+        "Banana Pancakes Jack Johnson"
+    ]
+    # 나머지 감정도 같은 방식으로 30곡씩 추가 가능
 }
 
 emoji_map = {
