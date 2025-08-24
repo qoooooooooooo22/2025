@@ -10,27 +10,30 @@ html_code = """
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🎶 감정 기반 음악 추천</title>
+<title>감정 기반 음악 추천</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
-  /* 전체 스타일링 */
-  body, html { margin:0; padding:0; font-family:'Inter', sans-serif; background:#080808; color:#fff; overflow-x:hidden; }
-  section { height:100vh; display:flex; justify-content:center; align-items:center; flex-direction:column; text-align:center; opacity:0; transform:translateY(100px);}
-  section.active { opacity:1; transform:translateY(0); transition:0.8s ease;}
-  h1 { font-size:3rem; letter-spacing:0.1em; font-weight:900; margin-bottom:20px;}
-  select, button { background:#222; color:#fff; border:none; padding:10px 20px; margin:10px; border-radius:8px; cursor:pointer; transition:0.3s;}
-  select:hover, button:hover { background:#444; }
-  .song-list { display:flex; flex-wrap:wrap; justify-content:center; margin-top:20px; gap:20px; }
-  .song-card { background:#1c1c1c; border-radius:15px; padding:20px; width:250px; text-align:center; box-shadow:0 4px 8px rgba(0,0,0,0.3); opacity:0; transform:translateY(50px); transition:0.5s ease;}
+  body, html { margin:0; padding:0; font-family:'Inter', sans-serif; background:#0a0a0a; color:#fff; overflow-x:hidden; }
+  section { height:100vh; display:flex; justify-content:center; align-items:center; flex-direction:column; text-align:center; opacity:0; transform:translateY(50px);}
+  section.active { opacity:1; transform:translateY(0); transition:1s ease;}
+  h1 { font-size:4rem; font-weight:900; letter-spacing:0.1em; margin-bottom:30px; color:#fff; text-transform:uppercase; }
+  h2 { font-size:2rem; margin-bottom:20px; color:#ff4081; }
+  select, button { background:#222; color:#fff; border:none; padding:12px 25px; margin:10px; border-radius:12px; cursor:pointer; transition:0.3s;}
+  select:hover, button:hover { background:#ff4081; color:#000; }
+  .song-list { display:flex; flex-wrap:wrap; justify-content:center; margin-top:30px; gap:25px; }
+  .song-card { background:#1a1a1a; border-radius:20px; padding:20px; width:260px; text-align:center; box-shadow:0 10px 30px rgba(0,0,0,0.5); opacity:0; transform:translateY(50px); transition:0.5s ease, transform 0.5s ease; cursor:pointer; }
   .song-card.active { opacity:1; transform:translateY(0);}
-  .song-card img { width:100%; border-radius:10px; }
-  .song-card h3 { margin-top:10px; font-size:1.2rem; font-weight:600; }
+  .song-card:hover { transform:scale(1.05) rotate(-1deg); box-shadow:0 15px 35px rgba(255,64,129,0.6); }
+  .song-card img { width:100%; border-radius:15px; }
+  .song-card h3 { margin-top:10px; font-size:1.2rem; font-weight:700; }
   .song-card a { display:inline-block; margin-top:10px; color:#fff; text-decoration:none; transition:0.3s;}
   .song-card a:hover { color:#ff4081; }
 </style>
 </head>
 <body>
 <section id="intro">
-  <h1>🎶 감정 기반 음악 추천</h1>
+  <h1>Emotion Based Music</h1>
+  <h2>감정에 맞는 노래를 추천받아보세요</h2>
 </section>
 <section id="recommendation">
   <h2>감정을 선택하세요</h2>
@@ -65,7 +68,7 @@ const emotionSongs = {
   "그리움": ["Missing Everything But The Girl","I Miss You Blink-182","Far Away Nickelback","Someone Like You Adele","Tears Dry on Their Own Amy Winehouse","My Heart Will Go On Celine Dion","Unchained Melody The Righteous Brothers","All I Want Kodaline","Hurt Johnny Cash","With or Without You U2","Goodbye My Lover James Blunt","Back to December Taylor Swift","Everybody Hurts R.E.M.","Nothing Compares 2 U Sinéad O'Connor","Creep Radiohead","End of the Road Boyz II Men","Jar of Hearts Christina Perri","Lost Cause Billie Eilish","One Last Time Ariana Grande","Hallelujah Jeff Buckley","I Will Always Love You Whitney Houston","Bleeding Love Leona Lewis","The Scientist Coldplay","Say Something A Great Big World","Skinny Love Bon Iver","Fade to Black Metallica","Don't Speak No Doubt","Yesterday The Beatles","Back to Black Amy Winehouse","Endless Love Diana Ross & Lionel Richie"]
 };
 
-function getRandomSongs(arr, count=3){
+function getRandomSongs(arr,count=3){
   let shuffled = [...arr].sort(()=>0.5-Math.random());
   return shuffled.slice(0,count);
 }
@@ -77,12 +80,12 @@ const recommendBtn = document.getElementById('recommendBtn');
 function displaySongs(){
   const emotion = emotionSelect.value;
   const songs = getRandomSongs(emotionSongs[emotion]);
-  songList.innerHTML = '';
+  songList.innerHTML='';
   songs.forEach((song,index)=>{
     const card = document.createElement('div');
     card.classList.add('song-card');
     card.innerHTML = `
-      <img src="https://via.placeholder.com/250x250?text=${encodeURIComponent(song)}" alt="${song}">
+      <img src="https://via.placeholder.com/260x260?text=${encodeURIComponent(song)}" alt="${song}">
       <h3>${song}</h3>
       <a href="https://www.youtube.com/results?search_query=${encodeURIComponent(song)}" target="_blank">YouTube에서 보기</a>
     `;
@@ -93,19 +96,17 @@ function displaySongs(){
 
 recommendBtn.addEventListener('click', displaySongs);
 
-// 스크롤 애니메이션
-window.addEventListener('scroll', ()=>{
+window.addEventListener('scroll',()=>{
   document.querySelectorAll('section').forEach(section=>{
-    if(window.scrollY + window.innerHeight*0.8 > section.offsetTop){
+    if(window.scrollY+window.innerHeight*0.8>section.offsetTop){
       section.classList.add('active');
     }
   });
 });
 
-// 초기화
-document.addEventListener('DOMContentLoaded', ()=>{
+document.addEventListener('DOMContentLoaded',()=>{
   document.querySelectorAll('section').forEach(section=>{
-    if(window.scrollY + window.innerHeight*0.8 > section.offsetTop){
+    if(window.scrollY+window.innerHeight*0.8>section.offsetTop){
       section.classList.add('active');
     }
   });
@@ -115,4 +116,4 @@ document.addEventListener('DOMContentLoaded', ()=>{
 </html>
 """
 
-components.html(html_code, height=1200)
+components.html(html_code, height=1500)
