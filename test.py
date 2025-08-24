@@ -1,13 +1,15 @@
 import streamlit as st
 import requests
+import openai
 
-# --- 설정 ---
-st.set_page_config(page_title="감정 음악 추천기", page_icon="🎶")
+# --- 페이지 설정 ---
+st.set_page_config(page_title="감정 음악 추천기", page_icon="🎵")
 
-# --- YouTube API 키 ---
-YOUTUBE_API_KEY = "AIzaSyBLuzIZRaRKshJJkGClpLDrPB55F0ETfVo"
+# --- API 키 설정 (직접 넣거나 secrets.toml로 분리 가능) ---
+OPENAI_API_KEY = "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"
+YOUTUBE_API_KEY = "AIzaSyAWFpXlAuf3FrBggJAxLkw1tnSw_yhH9DU"
 
-# --- 감정 → 이모지 맵 ---
+# --- 감정 이모지 맵 ---
 emoji_map = {
     "사랑": "💕",
     "이별": "💔",
@@ -21,21 +23,30 @@ emoji_map = {
     "슬픔": "😢"
 }
 
-# --- 감정 → 추천곡 (제목 + 아티스트) ---
-emotion_songs = {
-    "사랑": ["Fake Love BTS", "Love Scenario iKON"],
-    "이별": ["이 소설의 끝을 다시 써보려 해 한동근", "그날처럼 장덕철"],
-    "집착": ["사랑은 늘 도망가 임영웅"],
-    "행복": ["좋은 날 아이유"],
-    "귀여움": ["Dynamite BTS"],
-    "우정": ["언제나 네 편 10cm"],
-    "위로": ["밤편지 아이유"],
-    "추억": ["소녀 오혁"],
-    "그리움": ["눈의 꽃 박효신"],
-    "슬픔": ["비도 오고 그래서 헤이즈"]
-}
+# --- GPT로 노래 추천 ---
+def generate_song_recommendations(emotion, openai_api_key):
+    openai.api_key = openai_api_key
 
-# --- YouTube 검색 함수 ---
+    prompt = f"""
+    당신은 감정에 어울리는 음악을 추천하는 전문가입니다.
+    감정: {emotion}
+    그 감정에 어울리는 한국 대중가요 3곡을 '제목 - 가수' 형식으로 추천해주세요.
+    유튜브에서 쉽게 찾을 수 있는 노래로 부탁드립니다.
+    """
+
+    try:
+        response = openai.ChatCompletion.create(
+            model="gpt-4",
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.8
+        )
+        reply = response.choices[0].message["content"]
+        return [line.strip() for line in reply.strip().split("\n") if line.strip()]
+    except Exception as e:
+        st.error(f"GPT 오류 발생: {e}")
+        return []
+
+# --- YouTube 검색 ---
 def search_youtube_video(api_key, query):
     search_url = "https://www.googleapis.com/youtube/v3/search"
     params = {
@@ -58,23 +69,26 @@ def search_youtube_video(api_key, query):
     else:
         return None
 
-# --- 앱 제목 ---
-st.title("🎶 감정 키워드 기반 음악 추천기")
+# --- UI 시작 ---
+st.title("🎶 감정 키워드 기반 음악 추천기 (GPT + YouTube)")
 
-# --- 감정 선택 ---
 selected_emotion = st.selectbox("오늘 당신의 감정은?", list(emoji_map.keys()))
+emoji = emoji_map.get(selected_emotion, "")
 
-if selected_emotion:
-    emoji = emoji_map[selected_emotion]
-    st.markdown(f"## {emoji} {selected_emotion} 감정에 어울리는 노래들")
+if st.button("🎧 AI 추천곡 받아보기"):
+    with st.spinner("AI가 당신의 감정에 어울리는 노래를 찾는 중..."):
+        songs = generate_song_recommendations(selected_emotion, OPENAI_API_KEY)
 
-    songs = emotion_songs.get(selected_emotion, [])
-    for song in songs:
-        result = search_youtube_video(YOUTUBE_API_KEY, song)
-        if result:
-            st.image(result["thumbnail"], use_container_width=True)
-            st.markdown(f"**🎵 {result['title']}**")
-            st.markdown(f"[📺 YouTube에서 보기]({result['url']})")
-            st.markdown("---")
-        else:
-            st.write("😢 해당 노래의 영상을 찾을 수 없습니다.")
+    if songs:
+        st.markdown(f"## {emoji} {selected_emotion} 감정에 어울리는 노래들")
+        for song in songs:
+            yt_result = search_youtube_video(YOUTUBE_API_KEY, song)
+            if yt_result:
+                st.image(yt_result["thumbnail"], use_container_width=True)
+                st.markdown(f"**🎵 {yt_result['title']}**")
+                st.markdown(f"[📺 YouTube에서 보기]({yt_result['url']})")
+                st.markdown("---")
+            else:
+                st.warning(f"🔍 '{song}'에 대한 YouTube 영상을 찾지 못했어요.")
+    else:
+        st.error("노래 추천을 가져오지 못했어요. 다시 시도해보세요.")
