@@ -3,7 +3,7 @@ import requests
 import random
 
 # 🔐 YouTube API 키
-YOUTUBE_API_KEY =AIzaSyBLuzIZRaRKshJJkGClpLDrPB55F0ETfVo
+YOUTUBE_API_KEY = AIzaSyBLuzIZRaRKshJJkGClpLDrPB55F0ETfVo
 
 # ✅ 감정별 30곡
 emotion_songs = {
