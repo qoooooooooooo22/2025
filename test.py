@@ -3,9 +3,9 @@ import requests
 import random
 
 # 🔐 YouTube API 키
-YOUTUBE_API_KEY = "AIzaSyBLuzIZRaRKshJJkGClpLDrPB55F0ETfVo"
+YOUTUBE_API_KEY = "여기에_너의_API_키"
 
-# ✅ 감정별 30곡
+# ✅ 감정별 30곡 (팝, 재즈, K-pop 등 다양)
 emotion_songs = {
     "사랑": [
         "All of Me - John Legend", "Lover - Taylor Swift", "Just the Way You Are - Bruno Mars",
@@ -71,19 +71,69 @@ emotion_songs = {
         "We Got the Beat - The Go-Go's", "Tik Tok - Kesha", "Candy - Mandy Moore", "So What - P!nk",
         "ABC - Jackson 5", "Dance Monkey - Tones and I"
     ],
-    # ... (이하 5개 감정 이별, 우정, 위로, 추억, 그리움 30곡씩 동일 방식으로 포함)
+    "이별": [
+        "Someone Like You - Adele", "Back to December - Taylor Swift", "Un-break My Heart - Toni Braxton",
+        "Nothing Compares 2 U - Sinéad O'Connor", "Stay - Rihanna", "Let Her Go - Passenger",
+        "When I Was Your Man - Bruno Mars", "All I Want - Kodaline", "Say Something - A Great Big World",
+        "Too Good at Goodbyes - Sam Smith", "Goodbye My Lover - James Blunt", "The Night We Met - Lord Huron",
+        "If I Die Young - The Band Perry", "Creep - Radiohead", "Fix You - Coldplay", "Bleeding Love - Leona Lewis",
+        "I Will Always Love You - Whitney Houston", "Jealous - Labrinth", "Lost Without You - Freya Ridings",
+        "Almost Lover - A Fine Frenzy", "Don't Speak - No Doubt", "Hard to Say I'm Sorry - Chicago",
+        "Right Here Waiting - Richard Marx", "Somebody That I Used to Know - Gotye", "Hurt - Christina Aguilera",
+        "Love Yourself - Justin Bieber", "Cry Me a River - Justin Timberlake", "Against All Odds - Phil Collins",
+        "Too Little Too Late - JoJo", "Back at One - Brian McKnight"
+    ],
+    "우정": [
+        "Count on Me - Bruno Mars", "Lean on Me - Bill Withers", "With a Little Help from My Friends - The Beatles",
+        "I'll Be There for You - The Rembrandts", "You've Got a Friend - Carole King", "Umbrella - Rihanna ft. Jay-Z",
+        "We Are Young - Fun ft. Janelle Monáe", "Best Friend - Saweetie", "Graduation (Friends Forever) - Vitamin C",
+        "Stand by Me - Ben E. King", "Walking on Sunshine - Katrina & The Waves", "Happy - Pharrell Williams",
+        "Good Time - Owl City & Carly Rae Jepsen", "Count on Me - Whitney Houston", "That's What Friends Are For - Dionne Warwick",
+        "Hold My Hand - Jess Glynne", "Girls Just Want to Have Fun - Cyndi Lauper", "Shake It Off - Taylor Swift",
+        "Dynamite - BTS", "On Top of the World - Imagine Dragons", "We Belong Together - Mariah Carey",
+        "You’ve Got a Friend in Me - Randy Newman", "True Colors - Cyndi Lauper", "Ain't No Mountain High Enough - Marvin Gaye & Tammi Terrell",
+        "One Call Away - Charlie Puth", "I'll Be There - Jackson 5", "Lean On Me - Club Nouveau", "Friend Like Me - Robin Williams",
+        "Walking on Sunshine - Aly & AJ", "Count on Me - Bruno Mars"
+    ],
+    "위로": [
+        "Fix You - Coldplay", "Lean on Me - Bill Withers", "Bridge Over Troubled Water - Simon & Garfunkel",
+        "Everybody Hurts - R.E.M.", "True Colors - Cyndi Lauper", "I Will Remember You - Sarah McLachlan",
+        "Heal the World - Michael Jackson", "Let It Be - The Beatles", "Don't Give Up - Peter Gabriel & Kate Bush",
+        "Rise Up - Andra Day", "Stronger - Kelly Clarkson", "Fight Song - Rachel Platten", "You've Got a Friend - James Taylor",
+        "Beautiful - Christina Aguilera", "Carry On - Fun", "Somewhere I Belong - Linkin Park", "Man in the Mirror - Michael Jackson",
+        "Here Comes the Sun - The Beatles", "Unwritten - Natasha Bedingfield", "Roar - Katy Perry", "Eye of the Tiger - Survivor",
+        "Shake It Off - Taylor Swift", "Happy - Pharrell Williams", "Brave - Sara Bareilles", "We Are the Champions - Queen",
+        "Ain't No Mountain High Enough - Marvin Gaye & Tammi Terrell", "Count on Me - Bruno Mars",
+        "Don't Stop Believin' - Journey", "What a Wonderful World - Louis Armstrong", "Walking on Sunshine - Katrina & The Waves"
+    ],
+    "추억": [
+        "Summer of '69 - Bryan Adams", "Wake Me Up When September Ends - Green Day", "Photograph - Ed Sheeran",
+        "Time After Time - Cyndi Lauper", "The Nights - Avicii", "Memories - Maroon 5", "Yesterday - The Beatles",
+        "Good Riddance (Time of Your Life) - Green Day", "September - Earth, Wind & Fire", "I Gotta Feeling - Black Eyed Peas",
+        "My Way - Frank Sinatra", "Viva La Vida - Coldplay", "Castle on the Hill - Ed Sheeran", "Graduation - Vitamin C",
+        "Sweet Child O' Mine - Guns N' Roses", "Take Me Home, Country Roads - John Denver", "I Will Remember You - Sarah McLachlan",
+        "Don't Stop Believin' - Journey", "Fast Car - Tracy Chapman", "Brown Eyed Girl - Van Morrison", "Hotel California - Eagles",
+        "Stairway to Heaven - Led Zeppelin", "Bohemian Rhapsody - Queen", "Imagine - John Lennon", "Landslide - Fleetwood Mac",
+        "Time in a Bottle - Jim Croce", "We Are Young - Fun", "Photograph - Nickelback", "Drive - Incubus", "The Scientist - Coldplay"
+    ],
+    "그리움": [
+        "Missing - Everything But The Girl", "I Miss You - Blink-182", "Far Away - Nickelback",
+        "Someone Like You - Adele", "Need You Now - Lady A", "Right Here Waiting - Richard Marx",
+        "Unchained Melody - Righteous Brothers", "All by Myself - Celine Dion", "When You Say Nothing at All - Ronan Keating",
+        "If I Ain't Got You - Alicia Keys", "Back to December - Taylor Swift", "The Night We Met - Lord Huron",
+        "My Heart Will Go On - Celine Dion", "Stay - Rihanna", "Say You Love Me - Jessie Ware",
+        "Jealous - Labrinth", "I Can't Make You Love Me - Bonnie Raitt", "Lost Without You - Freya Ridings",
+        "Too Good at Goodbyes - Sam Smith", "Bleeding Love - Leona Lewis", "All I Want - Kodaline",
+        "Tears Dry on Their Own - Amy Winehouse", "How to Save a Life - The Fray", "Someone You Loved - Lewis Capaldi",
+        "Nothing Compares 2 U - Sinéad O'Connor", "Creep - Radiohead", "Hurt - Johnny Cash",
+        "Fix You - Coldplay", "Say Something - A Great Big World", "Almost Lover - A Fine Frenzy"
+    ]
 }
 
 # 🔍 YouTube 검색
 def get_youtube_video_info(query):
     url = "https://www.googleapis.com/youtube/v3/search"
-    params = {
-        "part": "snippet",
-        "q": query,
-        "type": "video",
-        "maxResults": 1,
-        "key": YOUTUBE_API_KEY,
-    }
+    params = {"part": "snippet", "q": query, "type": "video", "maxResults": 1, "key": YOUTUBE_API_KEY}
     response = requests.get(url, params=params)
     data = response.json()
     if "items" in data and len(data["items"]) > 0:
@@ -94,26 +144,28 @@ def get_youtube_video_info(query):
         link = f"https://www.youtube.com/watch?v={video_id}"
         return title, thumbnail, link
     else:
-        return query, "https://via.placeholder.com/280x180.png?text=No+Video", "#"
+        return query, "https://via.placeholder.com/300.png?text=No+Video", "#"
 
-# 🎨 CSS & UI
+# 🎨 CSS + 디자인 업그레이드
 st.set_page_config(page_title="감정 기반 음악 추천", page_icon="🎵", layout="wide")
 st.markdown("""
 <style>
-body { background-color: #0f111a; color: white; font-family: 'Helvetica Neue', sans-serif; }
-.song-card { background: #1c1e2a; border-radius: 20px; width: 300px; padding: 15px; margin: 10px; text-align: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.4); transition: 0.3s; }
-.song-card:hover { transform: scale(1.05); box-shadow: 0 15px 40px rgba(255,255,255,0.2); }
-.song-card img { width: 100%; border-radius: 15px; }
-.song-card h4 { margin-top: 10px; font-size: 1rem; color: #fff; }
-.song-container { display: flex; flex-wrap: wrap; justify-content: center; }
-select { background-color: #1c1e2a; color:white; padding:8px; border-radius:8px; }
-button { background-color:#ff2e63; color:white; padding:10px 20px; border:none; border-radius:8px; cursor:pointer; font-weight:bold; }
-button:hover { background-color:#ff477e; }
+body { background: linear-gradient(135deg, #0f111a 0%, #1a1c2a 100%); color: white; font-family: 'Helvetica Neue', sans-serif; scroll-behavior: smooth; }
+select { background-color: #1c1e2a; color:white; padding:12px; border-radius:10px; margin:10px; font-size:1rem; }
+button { background-color:#ff2e63; color:white; padding:12px 24px; border:none; border-radius:10px; cursor:pointer; font-weight:bold; margin-left:10px; font-size:1rem; transition:0.3s;}
+button:hover { background-color:#ff477e; transform: scale(1.05); }
+h1 { text-align:center; margin-bottom:40px; font-size:3rem; color:#ff477e; text-shadow: 2px 2px 10px rgba(0,0,0,0.7); }
+.song-container { display:flex; flex-wrap:wrap; justify-content:center; scroll-snap-type: y mandatory; padding-bottom:50px; }
+.song-card { background: #1f2130; border-radius: 25px; width: 320px; padding: 20px; margin: 20px; text-align:center;
+             box-shadow: 0 10px 30px rgba(0,0,0,0.5); transition: 0.4s; scroll-snap-align: start; display:inline-block; }
+.song-card:hover { transform: scale(1.07); box-shadow: 0 20px 50px rgba(255,71,126,0.4); }
+.song-card img { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 20px; }
+.song-card h4 { margin-top:15px; font-size:1.1rem; color:#fff; }
+section { scroll-snap-align: start; }
 </style>
 """, unsafe_allow_html=True)
 
-st.markdown("<h1 style='text-align:center;'>🎵 감정 기반 음악 추천</h1>", unsafe_allow_html=True)
+st.markdown("<h1>감정 기반 음악 추천</h1>", unsafe_allow_html=True)
 
 # 감정 선택
 emotion = st.selectbox("당신의 감정은?", list(emotion_songs.keys()))
