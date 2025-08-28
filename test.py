@@ -145,7 +145,7 @@ def get_youtube_video_info(query):
         link = f"https://www.youtube.com/watch?v={video_id}"
         return title, thumbnail, link
     else:
-        return query, "https://via.placeholder.com/480.png?text=No+Video", "#"
+        return query, "https://via.placeholder.com/560.png?text=No+Video", "#"
 
 # 🎨 CSS + 디자인 업그레이드
 st.set_page_config(page_title="Mood Music Recommender", page_icon="🎵", layout="wide")
@@ -165,8 +165,9 @@ h1 { text-align:center; margin-bottom:40px; font-size:3rem; color:#ff477e; text-
 .song-container { display:flex; flex-wrap:wrap; justify-content:center; padding-bottom:50px; scroll-snap-type: y mandatory; }
 
 /* 카드 */
-.song-card { background: #1f2130; border-radius: 25px; width: 480px; padding: 20px; margin: 20px; text-align:center;
-             box-shadow: 0 10px 30px rgba(0,0,0,0.5); transition: 0.4s; scroll-snap-align: start; display:inline-block; }
+.song-card { background: #1f2130; border-radius: 25px; width: 560px; padding: 20px; margin: 20px; text-align:center;
+             box-shadow: 0 10px 30px rgba(0,0,0,0.5); transition: transform 0.6s ease, opacity 0.6s ease; scroll-snap-align: start; opacity:0; transform: translateY(50px);}
+.song-card.show { opacity:1; transform: translateY(0); }
 .song-card:hover { transform: scale(1.07); box-shadow: 0 20px 50px rgba(255,71,126,0.4); }
 
 /* 카드 이미지 */
@@ -186,7 +187,22 @@ h1 { text-align:center; margin-bottom:40px; font-size:3rem; color:#ff477e; text-
 .section-comfort { background: linear-gradient(135deg, #03a9f4 0%, #29b6f6 100%); padding:50px 0; }
 .section-memory { background: linear-gradient(135deg, #ff9800 0%, #ffc107 100%); padding:50px 0; }
 .section-missing { background: linear-gradient(135deg, #9e9e9e 0%, #616161 100%); padding:50px 0; }
+
+/* 스크롤 애니메이션 */
 </style>
+<script>
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if(entry.isIntersecting) {
+      entry.target.classList.add('show');
+    }
+  });
+}, { threshold: 0.2 });
+
+window.addEventListener('load', () => {
+  document.querySelectorAll('.song-card').forEach(card => observer.observe(card));
+});
+</script>
 """, unsafe_allow_html=True)
 
 # 타이틀
