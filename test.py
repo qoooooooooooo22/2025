@@ -162,10 +162,8 @@ button:hover { background-color:#ff477e; transform: scale(1.05); }
 h1 { text-align:center; margin-bottom:40px; font-size:3rem; color:#ff477e; text-shadow: 2px 2px 10px rgba(0,0,0,0.7); }
 
 .song-container { display:flex; flex-wrap:wrap; justify-content:center; padding-bottom:50px; scroll-snap-type: y mandatory; }
-
-.song-card { background: #1f2130; border-radius: 25px; width: 460px; padding: 20px; margin: 20px; text-align:center;
-             box-shadow: 0 10px 30px rgba(0,0,0,0.5); transition: transform 0.6s ease, opacity 0.6s ease; scroll-snap-align: start; opacity:0; transform: translateY(50px);}
-.song-card.show { opacity:1; transform: translateY(0); }
+.song-card { background: #1f2130; border-radius: 25px; width: 450px; padding: 20px; margin: 20px; text-align:center;
+             box-shadow: 0 10px 30px rgba(0,0,0,0.5); transition: transform 0.6s ease, opacity 0.6s ease; scroll-snap-align: start; opacity:1; transform: translateY(0);}
 .song-card:hover { transform: scale(1.05); box-shadow: 0 20px 50px rgba(255,71,126,0.4); }
 
 .song-card img { width: 400px; height: 400px; object-fit: cover; border-radius: 20px; display: block; margin-left: auto; margin-right: auto; }
@@ -173,19 +171,6 @@ h1 { text-align:center; margin-bottom:40px; font-size:3rem; color:#ff477e; text-
 
 .section { padding:50px 0; }
 </style>
-
-<script>
-const observer = new IntersectionObserver(entries => {
-  entries.forEach(entry => {
-    if(entry.isIntersecting) {
-      entry.target.classList.add('show');
-    }
-  });
-}, { threshold: 0.2 });
-window.addEventListener('load', () => {
-  document.querySelectorAll('.song-card').forEach(card => observer.observe(card));
-});
-</script>
 """, unsafe_allow_html=True)
 
 # 타이틀
@@ -200,6 +185,8 @@ if st.button("🎧 Get Recommendations"):
     st.markdown("<section class='section'><div class='song-container'>", unsafe_allow_html=True)
     for song in songs:
         title, thumb, link = get_youtube_video_info(song)
+        # 🔹 디버깅 출력
+        st.write(f"Title: {title}, Link: {link}, Thumbnail: {thumb}")
         st.markdown(f"""
         <div class="song-card">
             <a href="{link}" target="_blank">
