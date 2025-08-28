@@ -136,6 +136,8 @@ def get_youtube_video_info(query):
     url = "https://www.googleapis.com/youtube/v3/search"
     params = {"part": "snippet", "q": query, "type": "video", "maxResults": 1, "key": YOUTUBE_API_KEY}
     response = requests.get(url, params=params)
+    if response.status_code != 200:
+        return query, "https://via.placeholder.com/560.png?text=No+Video", "#"
     data = response.json()
     if "items" in data and len(data["items"]) > 0:
         video = data["items"][0]
@@ -152,31 +154,17 @@ st.set_page_config(page_title="Mood Music Recommender", page_icon="🎵", layout
 st.markdown("""
 <style>
 body { background: linear-gradient(135deg, #0f111a 0%, #1a1c2a 100%); color: white; font-family: 'Helvetica Neue', sans-serif; scroll-behavior: smooth; }
-
-/* 감정 선택 & 버튼 */
 select { background-color: #1c1e2a; color:white; padding:12px; border-radius:10px; margin:10px; font-size:1rem; }
 button { background-color:#ff2e63; color:white; padding:12px 24px; border:none; border-radius:10px; cursor:pointer; font-weight:bold; margin-left:10px; font-size:1rem; transition:0.3s;}
 button:hover { background-color:#ff477e; transform: scale(1.05); }
-
-/* 타이틀 */
 h1 { text-align:center; margin-bottom:40px; font-size:3rem; color:#ff477e; text-shadow: 2px 2px 10px rgba(0,0,0,0.7); }
-
-/* 카드 컨테이너 */
 .song-container { display:flex; flex-wrap:wrap; justify-content:center; padding-bottom:50px; scroll-snap-type: y mandatory; }
-
-/* 카드 */
 .song-card { background: #1f2130; border-radius: 25px; width: 560px; padding: 20px; margin: 20px; text-align:center;
              box-shadow: 0 10px 30px rgba(0,0,0,0.5); transition: transform 0.6s ease, opacity 0.6s ease; scroll-snap-align: start; opacity:0; transform: translateY(50px);}
 .song-card.show { opacity:1; transform: translateY(0); }
 .song-card:hover { transform: scale(1.07); box-shadow: 0 20px 50px rgba(255,71,126,0.4); }
-
-/* 카드 이미지 */
 .song-card img { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 20px; }
-
-/* 카드 제목 */
 .song-card h4 { margin-top:15px; font-size:1.2rem; color:#fff; font-weight:bold; }
-
-/* 섹션 배경 색 (감정별) */
 .section-love { background: linear-gradient(135deg, #ff6f91 0%, #ff3c78 100%); padding:50px 0; }
 .section-sad { background: linear-gradient(135deg, #3a3f5c 0%, #1c1e2a 100%); padding:50px 0; }
 .section-happy { background: linear-gradient(135deg, #ffde7d 0%, #ffc93c 100%); padding:50px 0; }
@@ -187,8 +175,6 @@ h1 { text-align:center; margin-bottom:40px; font-size:3rem; color:#ff477e; text-
 .section-comfort { background: linear-gradient(135deg, #03a9f4 0%, #29b6f6 100%); padding:50px 0; }
 .section-memory { background: linear-gradient(135deg, #ff9800 0%, #ffc107 100%); padding:50px 0; }
 .section-missing { background: linear-gradient(135deg, #9e9e9e 0%, #616161 100%); padding:50px 0; }
-
-/* 스크롤 애니메이션 */
 </style>
 <script>
 const observer = new IntersectionObserver(entries => {
@@ -198,7 +184,6 @@ const observer = new IntersectionObserver(entries => {
     }
   });
 }, { threshold: 0.2 });
-
 window.addEventListener('load', () => {
   document.querySelectorAll('.song-card').forEach(card => observer.observe(card));
 });
@@ -214,10 +199,7 @@ emotion = st.selectbox("Choose your mood:", list(emotion_songs.keys()))
 # 추천 버튼
 if st.button("🎧 Get Recommendations"):
     songs = random.sample(emotion_songs[emotion], 3)
-
-    # 섹션 배경 클래스
-    section_class = f"section-{emotion.lower()}" if emotion.lower() in ["사랑","슬픔","행복","집착","귀여움","이별","우정","위로","추억","그리움"] else ""
-    
+    section_class = f"section-{emotion.lower()}"
     st.markdown(f"<section class='{section_class}'><div class='song-container'>", unsafe_allow_html=True)
     for song in songs:
         title, thumb, link = get_youtube_video_info(song)
