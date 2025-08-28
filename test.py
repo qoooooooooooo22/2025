@@ -131,26 +131,28 @@ emotion_songs = {
 }
 
 
-# 🔍 YouTube 검색
+# YouTube 검색
 def get_youtube_video_info(query):
     url = "https://www.googleapis.com/youtube/v3/search"
     params = {"part": "snippet", "q": query, "type": "video", "maxResults": 1, "key": YOUTUBE_API_KEY}
     response = requests.get(url, params=params)
     if response.status_code != 200:
-        return query, "https://via.placeholder.com/560.png?text=No+Video", "#"
+        return query, "https://via.placeholder.com/450.png?text=No+Video", "#"
     data = response.json()
-    if "items" in data and len(data["items"]) > 0:
+    try:
         video = data["items"][0]
         video_id = video["id"]["videoId"]
         title = video["snippet"]["title"]
         thumbnail = video["snippet"]["thumbnails"]["high"]["url"]
         link = f"https://www.youtube.com/watch?v={video_id}"
         return title, thumbnail, link
-    else:
-        return query, "https://via.placeholder.com/560.png?text=No+Video", "#"
+    except:
+        return query, "https://via.placeholder.com/450.png?text=No+Video", "#"
 
-# 🎨 CSS + 디자인 업그레이드
+# 페이지 설정
 st.set_page_config(page_title="Mood Music Recommender", page_icon="🎵", layout="wide")
+
+# CSS 디자인
 st.markdown("""
 <style>
 body { background: linear-gradient(135deg, #0f111a 0%, #1a1c2a 100%); color: white; font-family: 'Helvetica Neue', sans-serif; scroll-behavior: smooth; }
@@ -158,24 +160,20 @@ select { background-color: #1c1e2a; color:white; padding:12px; border-radius:10p
 button { background-color:#ff2e63; color:white; padding:12px 24px; border:none; border-radius:10px; cursor:pointer; font-weight:bold; margin-left:10px; font-size:1rem; transition:0.3s;}
 button:hover { background-color:#ff477e; transform: scale(1.05); }
 h1 { text-align:center; margin-bottom:40px; font-size:3rem; color:#ff477e; text-shadow: 2px 2px 10px rgba(0,0,0,0.7); }
+
 .song-container { display:flex; flex-wrap:wrap; justify-content:center; padding-bottom:50px; scroll-snap-type: y mandatory; }
-.song-card { background: #1f2130; border-radius: 25px; width: 560px; padding: 20px; margin: 20px; text-align:center;
+
+.song-card { background: #1f2130; border-radius: 25px; width: 460px; padding: 20px; margin: 20px; text-align:center;
              box-shadow: 0 10px 30px rgba(0,0,0,0.5); transition: transform 0.6s ease, opacity 0.6s ease; scroll-snap-align: start; opacity:0; transform: translateY(50px);}
 .song-card.show { opacity:1; transform: translateY(0); }
-.song-card:hover { transform: scale(1.07); box-shadow: 0 20px 50px rgba(255,71,126,0.4); }
-.song-card img { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 20px; }
+.song-card:hover { transform: scale(1.05); box-shadow: 0 20px 50px rgba(255,71,126,0.4); }
+
+.song-card img { width: 400px; height: 400px; object-fit: cover; border-radius: 20px; display: block; margin-left: auto; margin-right: auto; }
 .song-card h4 { margin-top:15px; font-size:1.2rem; color:#fff; font-weight:bold; }
-.section-love { background: linear-gradient(135deg, #ff6f91 0%, #ff3c78 100%); padding:50px 0; }
-.section-sad { background: linear-gradient(135deg, #3a3f5c 0%, #1c1e2a 100%); padding:50px 0; }
-.section-happy { background: linear-gradient(135deg, #ffde7d 0%, #ffc93c 100%); padding:50px 0; }
-.section-obsession { background: linear-gradient(135deg, #9c27b0 0%, #e040fb 100%); padding:50px 0; }
-.section-cute { background: linear-gradient(135deg, #ffb6b9 0%, #ff6f91 100%); padding:50px 0; }
-.section-breakup { background: linear-gradient(135deg, #607d8b 0%, #37474f 100%); padding:50px 0; }
-.section-friendship { background: linear-gradient(135deg, #4caf50 0%, #81c784 100%); padding:50px 0; }
-.section-comfort { background: linear-gradient(135deg, #03a9f4 0%, #29b6f6 100%); padding:50px 0; }
-.section-memory { background: linear-gradient(135deg, #ff9800 0%, #ffc107 100%); padding:50px 0; }
-.section-missing { background: linear-gradient(135deg, #9e9e9e 0%, #616161 100%); padding:50px 0; }
+
+.section { padding:50px 0; }
 </style>
+
 <script>
 const observer = new IntersectionObserver(entries => {
   entries.forEach(entry => {
@@ -199,8 +197,7 @@ emotion = st.selectbox("Choose your mood:", list(emotion_songs.keys()))
 # 추천 버튼
 if st.button("🎧 Get Recommendations"):
     songs = random.sample(emotion_songs[emotion], 3)
-    section_class = f"section-{emotion.lower()}"
-    st.markdown(f"<section class='{section_class}'><div class='song-container'>", unsafe_allow_html=True)
+    st.markdown("<section class='section'><div class='song-container'>", unsafe_allow_html=True)
     for song in songs:
         title, thumb, link = get_youtube_video_info(song)
         st.markdown(f"""
