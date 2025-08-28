@@ -130,6 +130,7 @@ emotion_songs = {
     ]
 }
 
+
 # 🔍 YouTube 검색
 def get_youtube_video_info(query):
     url = "https://www.googleapis.com/youtube/v3/search"
@@ -144,35 +145,64 @@ def get_youtube_video_info(query):
         link = f"https://www.youtube.com/watch?v={video_id}"
         return title, thumbnail, link
     else:
-        return query, "https://via.placeholder.com/300.png?text=No+Video", "#"
+        return query, "https://via.placeholder.com/480.png?text=No+Video", "#"
 
 # 🎨 CSS + 디자인 업그레이드
-st.set_page_config(page_title="감정 기반 음악 추천", page_icon="🎵", layout="wide")
+st.set_page_config(page_title="Mood Music Recommender", page_icon="🎵", layout="wide")
 st.markdown("""
 <style>
 body { background: linear-gradient(135deg, #0f111a 0%, #1a1c2a 100%); color: white; font-family: 'Helvetica Neue', sans-serif; scroll-behavior: smooth; }
+
+/* 감정 선택 & 버튼 */
 select { background-color: #1c1e2a; color:white; padding:12px; border-radius:10px; margin:10px; font-size:1rem; }
 button { background-color:#ff2e63; color:white; padding:12px 24px; border:none; border-radius:10px; cursor:pointer; font-weight:bold; margin-left:10px; font-size:1rem; transition:0.3s;}
 button:hover { background-color:#ff477e; transform: scale(1.05); }
+
+/* 타이틀 */
 h1 { text-align:center; margin-bottom:40px; font-size:3rem; color:#ff477e; text-shadow: 2px 2px 10px rgba(0,0,0,0.7); }
-.song-container { display:flex; flex-wrap:wrap; justify-content:center; scroll-snap-type: y mandatory; padding-bottom:50px; }
-.song-card { background: #1f2130; border-radius: 25px; width: 320px; padding: 20px; margin: 20px; text-align:center;
+
+/* 카드 컨테이너 */
+.song-container { display:flex; flex-wrap:wrap; justify-content:center; padding-bottom:50px; scroll-snap-type: y mandatory; }
+
+/* 카드 */
+.song-card { background: #1f2130; border-radius: 25px; width: 480px; padding: 20px; margin: 20px; text-align:center;
              box-shadow: 0 10px 30px rgba(0,0,0,0.5); transition: 0.4s; scroll-snap-align: start; display:inline-block; }
 .song-card:hover { transform: scale(1.07); box-shadow: 0 20px 50px rgba(255,71,126,0.4); }
+
+/* 카드 이미지 */
 .song-card img { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 20px; }
-.song-card h4 { margin-top:15px; font-size:1.1rem; color:#fff; }
-section { scroll-snap-align: start; }
+
+/* 카드 제목 */
+.song-card h4 { margin-top:15px; font-size:1.2rem; color:#fff; font-weight:bold; }
+
+/* 섹션 배경 색 (감정별) */
+.section-love { background: linear-gradient(135deg, #ff6f91 0%, #ff3c78 100%); padding:50px 0; }
+.section-sad { background: linear-gradient(135deg, #3a3f5c 0%, #1c1e2a 100%); padding:50px 0; }
+.section-happy { background: linear-gradient(135deg, #ffde7d 0%, #ffc93c 100%); padding:50px 0; }
+.section-obsession { background: linear-gradient(135deg, #9c27b0 0%, #e040fb 100%); padding:50px 0; }
+.section-cute { background: linear-gradient(135deg, #ffb6b9 0%, #ff6f91 100%); padding:50px 0; }
+.section-breakup { background: linear-gradient(135deg, #607d8b 0%, #37474f 100%); padding:50px 0; }
+.section-friendship { background: linear-gradient(135deg, #4caf50 0%, #81c784 100%); padding:50px 0; }
+.section-comfort { background: linear-gradient(135deg, #03a9f4 0%, #29b6f6 100%); padding:50px 0; }
+.section-memory { background: linear-gradient(135deg, #ff9800 0%, #ffc107 100%); padding:50px 0; }
+.section-missing { background: linear-gradient(135deg, #9e9e9e 0%, #616161 100%); padding:50px 0; }
 </style>
 """, unsafe_allow_html=True)
 
-st.markdown("<h1>감정 기반 음악 추천</h1>", unsafe_allow_html=True)
+# 타이틀
+st.markdown("<h1>Mood Music Recommender</h1>", unsafe_allow_html=True)
 
 # 감정 선택
-emotion = st.selectbox("당신의 감정은?", list(emotion_songs.keys()))
+emotion = st.selectbox("Choose your mood:", list(emotion_songs.keys()))
 
-if st.button("🎧 노래 추천 받기"):
+# 추천 버튼
+if st.button("🎧 Get Recommendations"):
     songs = random.sample(emotion_songs[emotion], 3)
-    st.markdown("<div class='song-container'>", unsafe_allow_html=True)
+
+    # 섹션 배경 클래스
+    section_class = f"section-{emotion.lower()}" if emotion.lower() in ["사랑","슬픔","행복","집착","귀여움","이별","우정","위로","추억","그리움"] else ""
+    
+    st.markdown(f"<section class='{section_class}'><div class='song-container'>", unsafe_allow_html=True)
     for song in songs:
         title, thumb, link = get_youtube_video_info(song)
         st.markdown(f"""
@@ -183,4 +213,4 @@ if st.button("🎧 노래 추천 받기"):
             </a>
         </div>
         """, unsafe_allow_html=True)
-    st.markdown("</div>", unsafe_allow_html=True)
+    st.markdown("</div></section>", unsafe_allow_html=True)
